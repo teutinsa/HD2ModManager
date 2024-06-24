@@ -1,0 +1,104 @@
+﻿<Window x:Class="HD2ModManager.MainWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:HD2ModManager"
+		xmlns:vms="clr-namespace:HD2ModManager.ViewModels"
+		mc:Ignorable="d"
+		d:DataContext="{d:DesignInstance vms:MainViewModel}"
+		Title="HD2 Mod Manager"
+		Width="800"
+		Height="450"
+		MinWidth="800"
+		MinHeight="450"
+		Icon="Resources/Images/icon.png">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<ScrollViewer Grid.Row="0"
+					  HorizontalScrollBarVisibility="Disabled"
+					  VerticalScrollBarVisibility="Visible">
+			<ItemsControl x:Name="items"
+						  AllowDrop="True"
+						  ItemsSource="{Binding Mods}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate DataType="vms:ModViewModel">
+						<Border Height="50"
+								Margin="3"
+								BorderThickness="1"
+								BorderBrush="{x:Static SystemColors.ActiveBorderBrush}">
+							<Grid Margin="1">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="Auto"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+								<Image Grid.Column="0"
+									   Stretch="UniformToFill"
+									   Source="{Binding IconPath}"
+									   Width="{Binding Source={RelativeSource Mode=Self}, Path=ActualHeight}"/>
+								<StackPanel Grid.Column="1"
+											Margin="3 0">
+									<TextBlock Text="{Binding Name}"
+											   FontSize="20"/>
+									<TextBlock Text="{Binding Description}"/>
+								</StackPanel>
+								<ComboBox Grid.Column="2"
+										  Margin="3"
+										  ItemsSource="{Binding Options}"
+										  SelectedIndex="{Binding SelectedOption}"
+										  Visibility="{Binding OptionsVisibility}"
+										  VerticalAlignment="Center"/>
+								<CheckBox Grid.Column="3"
+										  IsChecked="{Binding Enabled}"
+										  Margin="3"
+										  VerticalAlignment="Center"/>
+								<Button Grid.Column="4"
+										Margin="3"
+										Command="{Binding RemoveCommand}">
+									<Image Source="Resources/Images/trash.png"
+										   Stretch="UniformToFill"/>
+								</Button>
+							</Grid>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
+		<Grid Grid.Row="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+			</Grid.ColumnDefinitions>
+			<StackPanel Grid.Column="1"
+						Orientation="Horizontal">
+				<Button Content="Add..."
+						Margin="3"
+						Padding="20 5"
+						Command="{Binding AddCommand}"/>
+				<Button Content="Save"
+						Margin="3"
+						Padding="20 5"
+						Command="{Binding SaveCommand}"/>
+				<Button Content="Purge"
+						Margin="3"
+						Padding="20 5"
+						Command="{Binding PurgeCommand}"/>
+				<Button Content="Deploy"
+						Margin="3"
+						Padding="20 5"
+						Command="{Binding DeployCommand}"/>
+			</StackPanel>
+		</Grid>
+	</Grid>
+</Window>
