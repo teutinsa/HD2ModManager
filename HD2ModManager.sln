@@ -8,6 +8,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibTest", "LibTest\LibTest.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HD2ModManager", "HD2ModManager\HD2ModManager.csproj", "{6C69245D-BF42-414A-9C61-89CE9130B61A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DB71191B-58B2-4E0F-8F1D-7BB37A49E48B}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9A4A7391-6833-493B-84C8-20BA06910F59}
