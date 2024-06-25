@@ -1,4 +1,4 @@
-# HD2ModManager
+﻿# HD2ModManager
 This is a simple mod manager for Helldivers 2.
 It's a portable self-contained WPF application. It will take care of installing and renaming patch files as well as keeping track of them. It will also let you disable mods.
 
@@ -11,7 +11,27 @@ No installation is required.
 - <u>Deploy:</u> This will purge and then deploy all the patch files of enabled mods renaming the patch file index along the way. **NOTE:** It *will* fail if there are already patch files with the same names as the to-be-deployed files present in the data directory.
 
 ## Features to still be added so far
-1. [ ] Reordering the mods in the list changing the load/patch order.
+- [ ] Reordering the mods in the list changing the load/patch order.
+- [ ] A dialog to create a mod. Intended to do the manifest writing for you.
 
 ## Bugs:
 - None are known so far. (But I'm sure that will change)
+
+## For mod developers:
+If you are a mod developer and want your mod to work best with this mod manager this is the section for you!
+When adding a mod to the manager it will check if your archive file contains a manifest.json file. If it finds one it will use it to display and deploy your mod. If it can't find one it will create one upon extraction and treat all level-one subdirectories as variants of the mod.
+What follows now is an example manifest.json file to give you the right idea. I'll be using [CursedLibertine's](https://next.nexusmods.com/profile/CursedLibertine/about-me) [Jane Diver](https://www.nexusmods.com/helldivers2/mods/69) mod as an example.
+```json
+﻿{
+  "Guid": "f9125200-1cc8-484d-acc9-1bfd8fdce4fb", //A GUID this is nothing visible but must be uniqe. The manager uses it to identify your mod.
+  "Name": "Jane Helldiver 4K v1.04", //This is the display name of your mod.
+  "Description": "Locally imported mod.", //This is a shord description of your mod.
+  "IconPath": null, //This is a optional path to a image file if you want your mod to have a icon in the manager.
+  "Options": [ //These are the variants of the mod. The listed names must be the exact same as the sub directories in your archive.
+    "Jane Helldiver 4K - Skin B",
+    "Jane Helldiver 4K - Skin A"
+  ]
+}
+```
+I hope this helps whoever is trying to understand my tool.
+If there are any more questions please message me and I will try my best to assist you.
