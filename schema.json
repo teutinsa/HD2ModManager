@@ -1,5 +1,6 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://raw.githubusercontent.com/teutinsa/HD2ModManager/master/schema.json",
 	"title": "Helldivers 2 Mod Manager Manifest",
 	"description": "A manifest to describe your mod to the Helldivers 2 Mod Manager",
 	"type": "object",
