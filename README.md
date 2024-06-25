@@ -15,7 +15,7 @@ No installation is required.
 - [ ] A dialog to create a mod. Intended to do the manifest writing for you.
 
 ## Bugs:
-- None are known so far. (But I'm sure that will change)
+- Patch indexing does not increase correctly when files have different names.
 
 ## For mod developers:
 If you are a mod developer and want your mod to work best with this mod manager this is the section for you!
@@ -35,3 +35,9 @@ What follows now is an example manifest.json file to give you the right idea. I'
 ```
 I hope this helps whoever is trying to understand my tool.
 If there are any more questions please message me and I will try my best to assist you.
+
+---
+## Change log
+
+### 0.1.0.0 (Beta)
+- Initial release
