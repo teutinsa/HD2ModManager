@@ -22,7 +22,7 @@ public sealed record ModData
 	private static JsonSerializerOptions _options = new()
 	{
 		AllowTrailingCommas = true,
-		WriteIndented = true
+		WriteIndented = true,
 	};
 
 	public static ModData Deserialize(string filePath)

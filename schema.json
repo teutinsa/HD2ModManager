@@ -1,0 +1,46 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "Helldivers 2 Mod Manager Manifest",
+	"description": "A manifest to describe your mod to the Helldivers 2 Mod Manager",
+	"type": "object",
+	"properties": {
+		"Guid": {
+			"description": "A GUID. This is nothing visible but must be uniqe. The manager uses it to identify your mod.",
+			"type": "string"
+		},
+		"Name": {
+			"description": "This is the display name of your mod.",
+			"type": "string"
+		},
+		"Description": {
+			"description": "This is a short description of your mod.",
+			"type": "string"
+		},
+		"IconPath": {
+			"description": "This is a short description of your mod.",
+			"type": [
+				"string",
+				"null"
+			]
+		},
+		"Options": {
+			"description": "These are the variants of the mod. The listed names must be the exact same as the sub directories in your archive.",
+			"type": [
+				"array",
+				"null"
+			],
+			"items": {
+				"type": "string"
+			},
+			"minItems": 1,
+			"uniqueItems": true
+		}
+	},
+	"required": [
+		"Guid",
+		"Name",
+		"Description",
+		"IconPath",
+		"Options"
+	]
+}
