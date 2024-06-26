@@ -1,6 +1,7 @@
 ﻿// Ignore Spelling: HD
 
 using System.Collections.Generic;
+using System.IO;
 
 namespace HD2ModManagerLib;
 
@@ -18,10 +19,14 @@ public sealed class Mod
 
 	public int Option { get; set; }
 
+	public DirectoryInfo ModDir { get; }
+
 	internal readonly ModData _data;
 
-	internal Mod(ModData data)
+	internal Mod(ModData data, DirectoryInfo modDir)
 	{
 		_data = data;
+
+		ModDir = modDir;
 	}
 }

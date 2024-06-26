@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.Input;
 using HD2ModManagerLib;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace HD2ModManager.ViewModels
 {

@@ -11,19 +11,25 @@ namespace HD2ModManager.ViewModels
 	{
 		public ObservableCollection<ModViewModel> Mods { get; }
 
+		[ObservableProperty]
+		private Visibility _workingVisibility = Visibility.Hidden;
+		[ObservableProperty]
+		private string _workText = string.Empty;
+
 		public MainViewModel()
 		{
 			Mods = new(App.Current.Manager.Mods.Select(m => new ModViewModel(this, m)).ToArray());
 		}
 
 		[RelayCommand]
-		void Add()
+		async Task Add()
 		{
 			var fileDilog = new OpenFileDialog
 			{
+				Title = "Add mod archive...",
 				CheckFileExists = true,
 				CheckPathExists = true,
-				DefaultDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+				InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
 				Filter = "Archives (*.zip,*.rar)|*.zip;*.rar",
 				Multiselect = false,
 			};
@@ -32,7 +38,14 @@ namespace HD2ModManager.ViewModels
 			if (!result.HasValue || !result.Value)
 				return;
 
-			if (!App.Current.Manager.AddMod(fileDilog.FileName))
+			WorkText = "Adding mod...";
+			WorkingVisibility = Visibility.Visible;
+
+			var success = await Task.Run(() => App.Current.Manager.AddMod(fileDilog.FileName));
+
+			WorkingVisibility = Visibility.Hidden;
+
+			if (!success)
 			{
 				MessageBox.Show(App.Current.MainWindow, "Error adding mod!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				return;
@@ -56,11 +69,17 @@ namespace HD2ModManager.ViewModels
 		}
 
 		[RelayCommand]
-		void Purge()
+		async Task Purge()
 		{
 			try
 			{
-				App.Current.Manager.PurgeMods();
+				WorkText = "Purging mods...";
+				WorkingVisibility = Visibility.Visible;
+
+				await Task.Run(static () => App.Current.Manager.PurgeMods());
+
+				WorkingVisibility = Visibility.Hidden;
+
 				MessageBox.Show(App.Current.MainWindow, "Mods purged.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
 			}
 			catch(Exception ex)
@@ -70,11 +89,17 @@ namespace HD2ModManager.ViewModels
 		}
 
 		[RelayCommand]
-		void Deploy()
+		async Task Deploy()
 		{
 			try
 			{
-				App.Current.Manager.InstallMods();
+				WorkText = "Deploying mods...";
+				WorkingVisibility = Visibility.Visible;
+				
+				await Task.Run(App.Current.Manager.InstallMods);
+				
+				WorkingVisibility = Visibility.Hidden;
+
 				MessageBox.Show(App.Current.MainWindow, "Mods installed.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
 			}
 			catch(Exception ex)

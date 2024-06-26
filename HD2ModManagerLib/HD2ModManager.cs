@@ -56,7 +56,7 @@ public sealed class HD2ModManager
 		foreach(var dir in s_modsDir.EnumerateDirectories())
 		{
 			var manifest = ModData.Deserialize(Path.Combine(dir.FullName, "manifest.json"));
-			_mods.Add(new Mod(manifest));
+			_mods.Add(new Mod(manifest, dir));
 		}
 
 		if (s_enabledJson.Exists)
@@ -111,7 +111,7 @@ public sealed class HD2ModManager
 			manifest = new()
 			{
 				Guid = Guid.NewGuid(),
-				Name = zipFile.Name.Substring(0, zipFile.Name.Length - zipFile.Extension.Length),
+				Name = zipFile.Name[..^zipFile.Extension.Length],
 				Description = "Locally imported mod.",
 				Options = options
 			};
@@ -122,7 +122,7 @@ public sealed class HD2ModManager
 			manifest = ModData.Deserialize(stream);
 		}
 
-		var modDir = new DirectoryInfo(Path.Combine(s_modsDir.FullName, manifest.Name));
+		var modDir = new DirectoryInfo(Path.Combine(s_modsDir.FullName, zipFile.Name[..^zipFile.Extension.Length]));
 		if (modDir.Exists)
 			return false;
 
@@ -130,7 +130,7 @@ public sealed class HD2ModManager
 		archive.ExtractToDirectory(modDir.FullName);
 		manifest.Serialize(new FileInfo(Path.Combine(modDir.FullName, "manifest.json")));
 
-		_mods.Add(new Mod(manifest)
+		_mods.Add(new Mod(manifest, modDir)
 		{
 			Enabled = enable,
 		});
@@ -172,24 +172,47 @@ public sealed class HD2ModManager
 	{
 		Save();
 		PurgeMods();
+		if (s_stageDir.Exists)
+			s_stageDir.Delete(true);
 		s_stageDir.Create();
 
 		var mods = _mods.Where(static m => m.Enabled).ToArray();
 		if (mods.Length > 0)
 		{
-			for (int i = 0; i < mods.Length; i++)
+			var groupedMods = new Dictionary<string, List<Mod>>();
+			foreach (var mod in mods)
 			{
-				var mod = mods[i];
-
 				DirectoryInfo patchFileDir;
 				if (mod.Options is null)
-					patchFileDir = new DirectoryInfo(Path.Combine(s_modsDir.FullName, mod.Name));
+					patchFileDir = mod.ModDir;
 				else
-					patchFileDir = new DirectoryInfo(Path.Combine(s_modsDir.FullName, mod.Name, mod.Options[mod.Option]));
+					patchFileDir = new DirectoryInfo(Path.Combine(mod.ModDir.FullName, mod.Options[mod.Option]));
 
 				foreach (var file in patchFileDir.EnumerateFiles("*patch_*"))
-					file.CopyTo(Path.Combine(s_stageDir.FullName, file.Name.Replace("patch_0", $"patch_{i}")));
+				{
+					var name = file.Name.Split('.').First();
+					if (!groupedMods.ContainsKey(name))
+						groupedMods.Add(name, new());
+					var list = groupedMods[name];
+					if (!list.Contains(mod))
+						list.Add(mod);
+				}
 			}
+
+			foreach(var (patchName, group) in groupedMods)
+				for (int i = 0; i < group.Count; i++)
+				{
+					var mod = group[i];
+
+					DirectoryInfo patchFileDir;
+					if (mod.Options is null)
+						patchFileDir = mod.ModDir;
+					else
+						patchFileDir = new DirectoryInfo(Path.Combine(mod.ModDir.FullName, mod.Options[mod.Option]));
+
+					foreach (var file in patchFileDir.EnumerateFiles("*patch_*"))
+						file.CopyTo(Path.Combine(s_stageDir.FullName, file.Name.Replace("patch_0", $"patch_{i}")));
+				}
 
 			foreach (var file in s_stageDir.EnumerateFiles())
 				file.CopyTo(Path.Combine(_dataDir.FullName, file.Name));

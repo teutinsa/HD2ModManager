@@ -12,7 +12,9 @@
 		Height="450"
 		MinWidth="800"
 		MinHeight="450"
-		Icon="Resources/Images/icon.png">
+		Icon="Resources/Images/icon.png"
+		WindowStartupLocation="CenterScreen"
+		ResizeMode="CanMinimize">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*"/>
@@ -99,6 +101,25 @@
 						Padding="20 5"
 						Command="{Binding DeployCommand}"/>
 			</StackPanel>
+		</Grid>
+		<Grid Grid.Row="0"
+			  Grid.RowSpan="2"
+			  Background="#9000"
+			  Visibility="{Binding WorkingVisibility, FallbackValue=Hidden}">
+			<Border Padding="3"
+					Background="{x:Static SystemColors.WindowBrush}"
+					BorderThickness="1"
+					BorderBrush="{x:Static SystemColors.WindowFrameBrush}"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"
+					Width="300">
+				<StackPanel>
+					<TextBlock Margin="3"
+							   Text="{Binding WorkText}"/>
+					<ProgressBar Margin="3"
+								 IsIndeterminate="True"/>
+				</StackPanel>
+			</Border>
 		</Grid>
 	</Grid>
 </Window>

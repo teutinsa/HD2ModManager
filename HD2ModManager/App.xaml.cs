@@ -13,6 +13,7 @@ public partial class App : Application
 
 	protected override void OnStartup(StartupEventArgs e)
 	{
+
 		if (string.IsNullOrEmpty(Settings.Default.HD2Path))
 		{
 			var dialog = new OpenFolderDialog
@@ -37,9 +38,16 @@ public partial class App : Application
 		{
 			Manager = new(Settings.Default.HD2Path);
 		}
+		catch(ArgumentException ex)
+		{
+			MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			Settings.Default.Reset();
+			Shutdown();
+			return;
+		}
 		catch(Exception ex)
 		{
-			MessageBox.Show("Invalid Helldivers 2 path!\n\nException:\n" + ex.Message + "\n\n" + Settings.Default.HD2Path, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			MessageBox.Show("Exception:\n" + ex.Message, "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			Settings.Default.Reset();
 			Shutdown();
 			return;
