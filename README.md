@@ -15,7 +15,7 @@ No installation is required.
 - [ ] A dialog to create a mod. Intended to do the manifest writing for you.
 
 ## Bugs:
-- Patch indexing does not increase correctly when files have different names.
+- All are fixed for now.
 
 ## For mod developers:
 If you are a mod developer and want your mod to work best with this mod manager this is the section for you!
