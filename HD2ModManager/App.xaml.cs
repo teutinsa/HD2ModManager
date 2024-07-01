@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿// Ignore Spelling: App
+
+using Microsoft.Win32;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
@@ -55,6 +57,12 @@ public partial class App : Application
 		
 		MainWindow = new MainWindow();
 		MainWindow.Show();
+	}
+
+	protected override void OnExit(ExitEventArgs e)
+	{
+		Manager?.Save();
+		base.OnExit(e);
 	}
 }
 

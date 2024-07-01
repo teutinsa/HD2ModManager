@@ -2,15 +2,17 @@
 
 using SharpCompress.Archives;
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace HD2ModManagerLib;
 
-public sealed class HD2ModManager
+public sealed partial class HD2ModManager
 {
 	private static readonly DirectoryInfo s_appDataDir = new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), nameof(HD2ModManager)));
 	private static readonly DirectoryInfo s_modsDir = new(Path.Combine(s_appDataDir.FullName, "Mods"));
@@ -51,7 +53,7 @@ public sealed class HD2ModManager
 		if (!s_modsDir.Exists)
 			s_modsDir.Create();
 
-		_mods = new();
+		_mods = [];
 
 		foreach(var dir in s_modsDir.EnumerateDirectories())
 		{
@@ -85,13 +87,14 @@ public sealed class HD2ModManager
 		ModData manifest;
 		if (manifestEntry is null)
 		{
-			if (!archive.Entries.Any(static e => e.Key is string str && str.Contains("patch_0")))
+			if (!archive.Entries.Any(static e => e.Key is string str && GetPatchRegex().IsMatch(str)))
 				return false;
 
 			var entryCount = archive.Entries.Count();
+			var hasSubDir = archive.Entries.Any(static e => e.Key is string str && str.Contains('\\'));
 			var only1SubDir = archive.Entries.All(static e => e.Key is string str && str.Count(static c => c == '\\' || c == '/') <= 1);
 			string[]? options;
-			if (entryCount == 3)
+			if (entryCount % 3 == 0 && !hasSubDir)
 				options = null;
 			else if (entryCount > 3 && only1SubDir)
 			{
@@ -132,7 +135,7 @@ public sealed class HD2ModManager
 
 		_mods.Add(new Mod(manifest, modDir)
 		{
-			Enabled = enable,
+			Enabled = enable
 		});
 
 		return true;
@@ -141,7 +144,7 @@ public sealed class HD2ModManager
 	public void RemoveMod(Mod mod)
 	{
 		if (_mods.Remove(mod))
-			Directory.Delete(Path.Combine(s_modsDir.FullName, mod.Name), true);
+			Directory.Delete(mod.ModDir.FullName, true);
 	}
 
 	public void Save()
@@ -179,39 +182,33 @@ public sealed class HD2ModManager
 		var mods = _mods.Where(static m => m.Enabled).ToArray();
 		if (mods.Length > 0)
 		{
-			var groupedMods = new Dictionary<string, List<Mod>>();
-			foreach (var mod in mods)
+			var modFiles = mods.SelectMany(static m =>
 			{
-				DirectoryInfo patchFileDir;
-				if (mod.Options is null)
-					patchFileDir = mod.ModDir;
+				DirectoryInfo dir;
+				if (m.Options is not null)
+					dir = new(Path.Combine(m.ModDir.FullName, m.Options[m.Option]));
 				else
-					patchFileDir = new DirectoryInfo(Path.Combine(mod.ModDir.FullName, mod.Options[mod.Option]));
+					dir = m.ModDir;
+				return dir.EnumerateFiles("*patch_*");
+			}).ToArray().AsSpan();
 
-				foreach (var file in patchFileDir.EnumerateFiles("*patch_*"))
-				{
-					var name = file.Name.Split('.').First();
-					if (!groupedMods.ContainsKey(name))
-						groupedMods.Add(name, new());
-					var list = groupedMods[name];
-					if (!list.Contains(mod))
-						list.Add(mod);
-				}
+			var grouped = new Dictionary<string, List<FileInfo>>();
+			foreach (var file in modFiles)
+			{
+				var name = file.Name[0..16];
+				if (!grouped.ContainsKey(name))
+					grouped.Add(name, []);
+				grouped[name].Add(file);
 			}
 
-			foreach(var (patchName, group) in groupedMods)
-				for (int i = 0; i < group.Count; i++)
+			foreach (var (_, files) in grouped)
+				for (int i = 0; i < files.Count; i++)
 				{
-					var mod = group[i];
-
-					DirectoryInfo patchFileDir;
-					if (mod.Options is null)
-						patchFileDir = mod.ModDir;
-					else
-						patchFileDir = new DirectoryInfo(Path.Combine(mod.ModDir.FullName, mod.Options[mod.Option]));
-
-					foreach (var file in patchFileDir.EnumerateFiles("*patch_*"))
-						file.CopyTo(Path.Combine(s_stageDir.FullName, file.Name.Replace("patch_0", $"patch_{i}")));
+					var file = files[i];
+					var patch = i / 3;
+					var match = GetPatchRegex().Match(file.Name);
+					var name = file.Name.Replace(match.Value, $"patch_{patch}");
+					file.CopyTo(Path.Combine(s_stageDir.FullName, name));
 				}
 
 			foreach (var file in s_stageDir.EnumerateFiles())
@@ -236,4 +233,7 @@ public sealed class HD2ModManager
 	{
 		return $"HD2ModManager\n{{\n\tAppDataDir = {s_appDataDir},\n\tTempDir = {s_tmpDir},\n\tHD2Dir = {_hd2Dir},\n\tBinDir = {_binDir},\n\tDataDir = {_dataDir},\n\tToolsDir = {_toolsDir},\n\tExeFile = {_exeFile}\n}}";
 	}
+
+	[GeneratedRegex(@"(?!\.)patch_[0-9]+(?=\.?)")]
+	private static partial Regex GetPatchRegex();
 }

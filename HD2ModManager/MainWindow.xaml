@@ -52,8 +52,10 @@
 								<StackPanel Grid.Column="1"
 											Margin="3 0">
 									<TextBlock Text="{Binding Name}"
-											   FontSize="20"/>
-									<TextBlock Text="{Binding Description}"/>
+											   FontSize="20"
+											   TextTrimming="CharacterEllipsis"/>
+									<TextBlock Text="{Binding Description}"
+											   TextTrimming="WordEllipsis"/>
 								</StackPanel>
 								<ComboBox Grid.Column="2"
 										  Margin="3"
@@ -84,20 +86,34 @@
 			</Grid.ColumnDefinitions>
 			<StackPanel Grid.Column="1"
 						Orientation="Horizontal">
+				<Expander ExpandDirection="Left"
+						  Margin="0 3">
+					<StackPanel Orientation="Horizontal">
+						<Button Content="Create..."
+								Margin="3 0"
+								Padding="20 5"
+								ToolTip="Make a mod using a dedicated dialog"
+								IsEnabled="False"/>
+						<Button Content="Save"
+								Margin="3 0"
+								Padding="20 5"
+								ToolTip="Save current mod configuration"
+								Command="{Binding SaveCommand}"/>
+					</StackPanel>
+				</Expander>
+				<TextBlock Text="More..."
+						   VerticalAlignment="Center"
+						   Margin="3 4"/>
 				<Button Content="Add..."
-						Margin="3"
+						Margin="3 4"
 						Padding="20 5"
 						Command="{Binding AddCommand}"/>
-				<Button Content="Save"
-						Margin="3"
-						Padding="20 5"
-						Command="{Binding SaveCommand}"/>
 				<Button Content="Purge"
-						Margin="3"
+						Margin="3 4"
 						Padding="20 5"
 						Command="{Binding PurgeCommand}"/>
 				<Button Content="Deploy"
-						Margin="3"
+						Margin="3 4"
 						Padding="20 5"
 						Command="{Binding DeployCommand}"/>
 			</StackPanel>

@@ -30,7 +30,7 @@ namespace HD2ModManager.ViewModels
 				CheckFileExists = true,
 				CheckPathExists = true,
 				InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
-				Filter = "Archives (*.zip,*.rar)|*.zip;*.rar",
+				Filter = "Archives (*.zip,*.rar,*.7z)|*.zip;*.rar;*.7z|All Files (*.*)|*.*",
 				Multiselect = false,
 			};
 
