@@ -45,3 +45,7 @@ If there are any more questions please message me and I will try my best to assi
 ### 0.1.1.0 (Beta)
 - Fixed a bug where the indexing of patch files got messed up if patch files had different names.
 - Added a work indicator when adding/purging/deploying as to not block the UI thread.
+
+### 0.1.2.0 (Beta)
+- Fixed a bug that caused a crash when a mod had more than 3 files.
+- Fixed a bug that caused a crash when a mod was named something higher than patch_0.
