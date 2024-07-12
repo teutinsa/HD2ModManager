@@ -1,7 +1,11 @@
 ﻿// Ignore Spelling: App
 
+using HD2ModManager.ViewModels;
+using HD2ModManager.Views;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
-using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
 namespace HD2ModManager;
@@ -10,8 +14,35 @@ public partial class App : Application
 {
 	public static new App Current => (App)Application.Current;
 
-	[AllowNull]
-	public HD2ModManagerLib.HD2ModManager Manager { get; private set; }
+	public IHost Host { get; }
+
+	public App()
+	{
+		var builder = new HostBuilder();
+		builder.ConfigureLogging(static log =>
+		{
+			log.AddProvider(new EntryLoggerProvider());
+#if DEBUG
+			log.AddDebug();
+#endif
+#if RELEASE
+			log.AddProvider(new FileLoggerProvider());
+#endif
+			log.SetMinimumLevel(LogLevel.Trace);
+		});
+		builder.ConfigureServices(static services =>
+		{
+			services.AddSingleton<HD2ModManagerLib.HD2ModManager>(static provider => new(Settings.Default.HD2Path, provider.GetService<ILogger<HD2ModManagerLib.HD2ModManager>>()));
+
+			services.AddSingleton<MainWindow>();
+			services.AddSingleton<LogWindow>();
+
+			services.AddTransient<MainViewModel>();
+			services.AddTransient<LogViewModel>();
+		});
+
+		Host = builder.Build();
+	}
 
 	protected override void OnStartup(StartupEventArgs e)
 	{
@@ -36,32 +67,13 @@ public partial class App : Application
 			Settings.Default.Save();
 		}
 
-		try
-		{
-			Manager = new(Settings.Default.HD2Path);
-		}
-		catch(ArgumentException ex)
-		{
-			MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			Settings.Default.Reset();
-			Shutdown();
-			return;
-		}
-		catch(Exception ex)
-		{
-			MessageBox.Show("Exception:\n" + ex.Message, "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
-			Settings.Default.Reset();
-			Shutdown();
-			return;
-		}
-		
-		MainWindow = new MainWindow();
+		MainWindow = Host.Services.GetRequiredService<MainWindow>();
 		MainWindow.Show();
 	}
 
 	protected override void OnExit(ExitEventArgs e)
 	{
-		Manager?.Save();
+		Host.Services.GetRequiredService<HD2ModManagerLib.HD2ModManager>().Save();
 		base.OnExit(e);
 	}
 }

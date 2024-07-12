@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HD2ModManager.Views;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -7,18 +9,22 @@ using System.Windows;
 
 namespace HD2ModManager.ViewModels
 {
-	internal sealed partial class MainViewModel : ObservableObject
+	public sealed partial class MainViewModel : ObservableObject
 	{
 		public ObservableCollection<ModViewModel> Mods { get; }
 
+		private readonly HD2ModManagerLib.HD2ModManager _manager;
+		private readonly IServiceProvider _provider;
 		[ObservableProperty]
 		private Visibility _workingVisibility = Visibility.Hidden;
 		[ObservableProperty]
 		private string _workText = string.Empty;
 
-		public MainViewModel()
+		public MainViewModel(IServiceProvider provider, HD2ModManagerLib.HD2ModManager manager)
 		{
-			Mods = new(App.Current.Manager.Mods.Select(m => new ModViewModel(this, m)).ToArray());
+			_provider = provider;
+			_manager = manager;
+			Mods = new(_manager.Mods.Select(m => new ModViewModel(this, _manager, m)).ToArray());
 		}
 
 		[RelayCommand]
@@ -41,7 +47,7 @@ namespace HD2ModManager.ViewModels
 			WorkText = "Adding mod...";
 			WorkingVisibility = Visibility.Visible;
 
-			var success = await Task.Run(() => App.Current.Manager.AddMod(fileDilog.FileName));
+			var success = await Task.Run(() => _manager.AddMod(fileDilog.FileName));
 
 			WorkingVisibility = Visibility.Hidden;
 
@@ -51,8 +57,8 @@ namespace HD2ModManager.ViewModels
 				return;
 			}
 
-			Mods.Add(new ModViewModel(this, App.Current.Manager.Mods.Last()));
-			App.Current.Manager.Save();
+			Mods.Add(new ModViewModel(this, _manager, _manager.Mods.Last()));
+			_manager.Save();
 		}
 
 		[RelayCommand]
@@ -60,7 +66,7 @@ namespace HD2ModManager.ViewModels
 		{
 			try
 			{
-				App.Current.Manager.Save();
+				_manager.Save();
 			}
 			catch(Exception ex)
 			{
@@ -76,7 +82,7 @@ namespace HD2ModManager.ViewModels
 				WorkText = "Purging mods...";
 				WorkingVisibility = Visibility.Visible;
 
-				await Task.Run(static () => App.Current.Manager.PurgeMods());
+				await Task.Run(() => _manager.PurgeMods());
 
 				WorkingVisibility = Visibility.Hidden;
 
@@ -96,7 +102,7 @@ namespace HD2ModManager.ViewModels
 				WorkText = "Deploying mods...";
 				WorkingVisibility = Visibility.Visible;
 				
-				await Task.Run(App.Current.Manager.InstallMods);
+				await Task.Run(_manager.InstallMods);
 				
 				WorkingVisibility = Visibility.Hidden;
 
@@ -106,6 +112,12 @@ namespace HD2ModManager.ViewModels
 			{
 				MessageBox.Show(App.Current.MainWindow, "Error installing mods!\n\nException:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
+		}
+
+		[RelayCommand]
+		void ShowLog()
+		{
+			_provider.GetService<LogWindow>()?.Show();
 		}
 	}
 }

@@ -5,5 +5,11 @@
     <Setting Name="HD2Path" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="ModPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">%appdata%\HD2ModManager</Value>
+    </Setting>
+    <Setting Name="TempPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">%temp%\HD2ModManager</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

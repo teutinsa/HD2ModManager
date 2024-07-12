@@ -1,14 +1,13 @@
 ﻿using HD2ModManager.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
 
-namespace HD2ModManager;
+namespace HD2ModManager.Views;
 
 public partial class MainWindow : Window
 {
-	public MainWindow()
+	public MainWindow(MainViewModel vm)
 	{
-		DataContext = new MainViewModel();
+		DataContext = vm;
 
 		InitializeComponent();
 	}

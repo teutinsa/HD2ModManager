@@ -1,4 +1,4 @@
-﻿<Window x:Class="HD2ModManager.MainWindow"
+﻿<Window x:Class="HD2ModManager.Views.MainWindow"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,15 +12,70 @@
 		Height="450"
 		MinWidth="800"
 		MinHeight="450"
-		Icon="Resources/Images/icon.png"
+		Icon="../Resources/Images/icon.png"
 		WindowStartupLocation="CenterScreen"
 		ResizeMode="CanMinimize">
 	<Grid>
 		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
-		<ScrollViewer Grid.Row="0"
+		<Menu Grid.Row="0"
+			  Margin="0 0 0 3">
+			<Menu.Resources>
+				<Image x:Key="SettingsIcon"
+					   Source="../Resources/Images/settings.png"/>
+				<Image x:Key="ExitIcon"
+					   Source="../Resources/Images/exit.png"/>
+				<Image x:Key="AddIcon"
+					   Source="../Resources/Images/add.png"/>
+				<Image x:Key="PurgeIcon"
+					   Source="../Resources/Images/purge.png"/>
+				<Image x:Key="DeployIcon"
+					   Source="../Resources/Images/deploy.png"/>
+				<Image x:Key="CreateIcon"
+					   Source="../Resources/Images/create.png"/>
+				<Image x:Key="LogIcon"
+					   Source="../Resources/Images/log.png"/>
+				<Image x:Key="AboutIcon"
+					   Source="../Resources/Images/about.png"/>
+			</Menu.Resources>
+			<MenuItem Header="_File">
+				<MenuItem Header="_Settings"
+						  Icon="{StaticResource SettingsIcon}"
+						  IsEnabled="False"/>
+				<Separator/>
+				<MenuItem Header="_Exit"
+						  Icon="{StaticResource ExitIcon}"/>
+			</MenuItem>
+			<MenuItem Header="_Mods">
+				<MenuItem Header="_Add..."
+						  Icon="{StaticResource AddIcon}"
+						  Command="{Binding AddCommand}"/>
+				<MenuItem Header="_Purge"
+						  Icon="{StaticResource PurgeIcon}"
+						  Command="{Binding PurgeCommand}"/>
+				<MenuItem Header="_Deploy"
+						  Icon="{StaticResource DeployIcon}"
+						  Command="{Binding DeployCommand}"/>
+				<Separator/>
+				<MenuItem Header="_Create"
+						  Icon="{StaticResource CreateIcon}"
+						  IsEnabled="False"/>
+			</MenuItem>
+			<MenuItem Header="_View">
+				<MenuItem Header="_Log"
+						  Icon="{StaticResource LogIcon}"
+						  Command="{Binding ShowLogCommand}"/>
+			</MenuItem>
+			<MenuItem Header="_Help">
+				<MenuItem Header="_About"
+						  Icon="{StaticResource AboutIcon}"
+						  IsEnabled="False"/>
+			</MenuItem>
+		</Menu>
+		<ScrollViewer Grid.Row="1"
 					  HorizontalScrollBarVisibility="Disabled"
 					  VerticalScrollBarVisibility="Visible">
 			<ItemsControl x:Name="items"
@@ -69,8 +124,9 @@
 										  VerticalAlignment="Center"/>
 								<Button Grid.Column="4"
 										Margin="3"
+										Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}"
 										Command="{Binding RemoveCommand}">
-									<Image Source="Resources/Images/trash.png"
+									<Image Source="../Resources/Images/trash.png"
 										   Stretch="UniformToFill"/>
 								</Button>
 							</Grid>
@@ -79,7 +135,7 @@
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
 		</ScrollViewer>
-		<Grid Grid.Row="1">
+		<Grid Grid.Row="2">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="Auto"/>
@@ -119,7 +175,7 @@
 			</StackPanel>
 		</Grid>
 		<Grid Grid.Row="0"
-			  Grid.RowSpan="2"
+			  Grid.RowSpan="3"
 			  Background="#9000"
 			  Visibility="{Binding WorkingVisibility, FallbackValue=Hidden}">
 			<Border Padding="3"

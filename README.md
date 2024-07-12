@@ -13,6 +13,8 @@ No installation is required.
 ## Features to still be added so far
 - [ ] Reordering the mods in the list changing the load/patch order.
 - [ ] A dialog to create a mod. Intended to do the manifest writing for you.
+- [ ] The ability to change the mod storage directory.
+- [ ] The ability to change the mod staging directory.
 
 ## Bugs:
 - All are fixed for now.

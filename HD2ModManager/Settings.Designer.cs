@@ -34,5 +34,29 @@ namespace HD2ModManager {
                 this["HD2Path"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("%appdata%\\HD2ModManager")]
+        public string ModPath {
+            get {
+                return ((string)(this["ModPath"]));
+            }
+            set {
+                this["ModPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("%temp%\\HD2ModManager")]
+        public string TempPath {
+            get {
+                return ((string)(this["TempPath"]));
+            }
+            set {
+                this["TempPath"] = value;
+            }
+        }
     }
 }

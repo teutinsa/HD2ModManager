@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace HD2ModManager.ViewModels
 {
-	internal sealed partial class ModViewModel(MainViewModel viewModel, Mod mod) : ObservableObject
+	public sealed partial class ModViewModel(MainViewModel viewModel, HD2ModManagerLib.HD2ModManager manager, Mod mod) : ObservableObject
 	{
 		public string IconPath => _mod.IconPath ?? "Resources/Images/icon.png";
 
@@ -38,12 +38,13 @@ namespace HD2ModManager.ViewModels
 		public IReadOnlyList<string> Options => _mod.Options ?? [];
 
 		private readonly MainViewModel _viewModel = viewModel;
+		private readonly HD2ModManagerLib.HD2ModManager _manager = manager;
 		private readonly Mod _mod = mod;
 
 		[RelayCommand]
 		void Remove()
 		{
-			App.Current.Manager.RemoveMod(_mod);
+			_manager.RemoveMod(_mod);
 			_viewModel.Mods.Remove(this);
 		}
 	}

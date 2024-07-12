@@ -7,18 +7,15 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UseWPF>true</UseWPF>
 		<ApplicationIcon>Resources\Images\icon.ico</ApplicationIcon>
-		<AssemblyVersion>0.1.2.0</AssemblyVersion>
-		<FileVersion>0.1.2.0</FileVersion>
-		<Version>0.1.2.0</Version>
+		<AssemblyVersion>0.2.0.0</AssemblyVersion>
+		<FileVersion>0.2.0.0</FileVersion>
+		<Version>0.2.0.0</Version>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 	
 	<ItemGroup>
-	  <Content Include="Resources\Images\icon.ico" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -26,8 +23,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Resource Include="Resources\Images\about.png" />
+		<Resource Include="Resources\Images\add.png" />
+		<Resource Include="Resources\Images\create.png" />
+		<Resource Include="Resources\Images\deploy.png" />
+		<Resource Include="Resources\Images\exit.png" />
 		<Resource Include="Resources\Images\icon.ico" />
 		<Resource Include="Resources\Images\icon.png" />
+		<Resource Include="Resources\Images\log.png" />
+		<Resource Include="Resources\Images\purge.png" />
+		<Resource Include="Resources\Images\settings.png" />
 		<Resource Include="Resources\Images\trash.png" />
 	</ItemGroup>
 
@@ -40,10 +45,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="Resources\Images\icon.png">
-		  <Pack>True</Pack>
-		  <PackagePath>\</PackagePath>
-		</None>
 		<None Update="Settings.settings">
 			<Generator>SettingsSingleFileGenerator</Generator>
 			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
