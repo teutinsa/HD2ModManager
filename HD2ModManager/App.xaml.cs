@@ -68,7 +68,13 @@ public partial class App : Application
 		}
 
 		MainWindow = Host.Services.GetRequiredService<MainWindow>();
+		MainWindow.Closed += MainWindow_Closed;
 		MainWindow.Show();
+	}
+
+	private void MainWindow_Closed(object? sender, EventArgs e)
+	{
+		Shutdown();
 	}
 
 	protected override void OnExit(ExitEventArgs e)
