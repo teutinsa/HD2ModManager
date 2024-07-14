@@ -9,23 +9,28 @@
 		Title="HD2 Mod Manager - Log"
 		Height="600"
 		Width="500"
-		ResizeMode="NoResize"
+		MinHeight="600"
+		MinWidth="500"
+		WindowStyle="ToolWindow"
 		d:DataContext="{d:DesignInstance vms:LogViewModel}"
 		Background="Black">
-	<ItemsControl ItemsSource="{Binding Entries}">
-		<ItemsControl.ItemsPanel>
-			<ItemsPanelTemplate>
-				<StackPanel/>
-			</ItemsPanelTemplate>
-		</ItemsControl.ItemsPanel>
-		<ItemsControl.ItemTemplate>
-			<DataTemplate DataType="vms:LogEntryViewModel">
-				<TextBlock Text="{Binding Message}"
-						   Foreground="{Binding Color}"
-						   TextWrapping="Wrap"
-						   TextTrimming="None"
-						   FontFamily="Consolas"/>
-			</DataTemplate>
-		</ItemsControl.ItemTemplate>
-	</ItemsControl>
+	<ScrollViewer VerticalScrollBarVisibility="Visible"
+				  HorizontalScrollBarVisibility="Disabled">
+		<ItemsControl ItemsSource="{Binding Entries}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate DataType="vms:LogEntryViewModel">
+					<TextBlock Text="{Binding Message}"
+							   Foreground="{Binding Color}"
+							   TextWrapping="Wrap"
+							   TextTrimming="None"
+							   FontFamily="Consolas"/>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</ScrollViewer>
 </Window>

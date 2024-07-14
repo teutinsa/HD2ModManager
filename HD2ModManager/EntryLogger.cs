@@ -45,7 +45,6 @@ public sealed class EntryLogger(string name) : ILogger
 		builder.Append(logLevel.ToString());
 		builder.Append(": ");
 		builder.Append(message);
-		builder.AppendLine();
 
 		if (exception is not null)
 		{
