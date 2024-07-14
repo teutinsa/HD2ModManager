@@ -6,24 +6,10 @@ using System.Text;
 
 namespace HD2ModManager;
 
-public sealed class FileLogger : ILogger, IDisposable
+public sealed class FileLogger(string name, StreamWriter stream) : ILogger
 {
-	private readonly string _name;
-	private readonly FileStream _fileStream;
-	private readonly StreamWriter _stream;
-
-	public FileLogger(string name)
-	{
-		_name = name;
-		_fileStream = new FileStream("HD2ModManager.log", FileMode.Create, FileAccess.Write, FileShare.Read);
-		_stream = new StreamWriter(_fileStream);
-	}
-
-	public void Dispose()
-	{
-		_stream.Dispose();
-		_fileStream.Dispose();
-	}
+	private readonly string _name = name;
+	private readonly StreamWriter _stream = stream;
 
 	public IDisposable? BeginScope<TState>(TState state) where TState : notnull
 	{
@@ -55,20 +41,19 @@ public sealed class FileLogger : ILogger, IDisposable
 		builder.Append(logLevel.ToString());
 		builder.Append(": ");
 		builder.Append(message);
-		builder.AppendLine();
 
 		if (exception is not null)
 		{
+			builder.AppendLine();
 			builder.Append('\t');
 			builder.Append(exception.GetType().Name);
 			builder.Append(": ");
 			builder.Append(exception.Message);
-			builder.AppendLine();
 			if (exception.StackTrace is not null)
 			{
+				builder.AppendLine();
 				builder.Append("\t\t");
 				builder.Append(exception.StackTrace?.ReplaceLineEndings($"{Environment.NewLine}\t\t"));
-				builder.AppendLine();
 			}
 		}
 
