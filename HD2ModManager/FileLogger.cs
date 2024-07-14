@@ -6,15 +6,23 @@ using System.Text;
 
 namespace HD2ModManager;
 
-public sealed class FileLogger : ILogger
+public sealed class FileLogger : ILogger, IDisposable
 {
 	private readonly string _name;
+	private readonly FileStream _fileStream;
+	private readonly StreamWriter _stream;
 
 	public FileLogger(string name)
 	{
-		_name = name + ".log";
-		if (File.Exists(_name))
-			File.Delete(_name);
+		_name = name;
+		_fileStream = new FileStream("HD2ModManager.log", FileMode.Create, FileAccess.Write, FileShare.Read);
+		_stream = new StreamWriter(_fileStream);
+	}
+
+	public void Dispose()
+	{
+		_stream.Dispose();
+		_fileStream.Dispose();
 	}
 
 	public IDisposable? BeginScope<TState>(TState state) where TState : notnull
@@ -42,6 +50,8 @@ public sealed class FileLogger : ILogger
 		builder.Append('[');
 		builder.Append(DateTime.Now.ToString("HH:mm::ss"));
 		builder.Append("] ");
+		builder.Append(_name);
+		builder.Append(" -> ");
 		builder.Append(logLevel.ToString());
 		builder.Append(": ");
 		builder.Append(message);
@@ -62,7 +72,8 @@ public sealed class FileLogger : ILogger
 			}
 		}
 
-		File.AppendAllText(_name, builder.ToString());
+		_stream.WriteLine(builder.ToString());
+		_stream.Flush();
 	}
 }
 

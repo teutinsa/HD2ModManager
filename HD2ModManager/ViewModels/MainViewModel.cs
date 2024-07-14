@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using HD2ModManager.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -15,14 +16,16 @@ namespace HD2ModManager.ViewModels
 
 		private readonly HD2ModManagerLib.HD2ModManager _manager;
 		private readonly IServiceProvider _provider;
+		private readonly ILogger<MainViewModel> _logger;
 		[ObservableProperty]
 		private Visibility _workingVisibility = Visibility.Hidden;
 		[ObservableProperty]
 		private string _workText = string.Empty;
 
-		public MainViewModel(IServiceProvider provider, HD2ModManagerLib.HD2ModManager manager)
+		public MainViewModel(IServiceProvider provider, ILogger<MainViewModel> logger, HD2ModManagerLib.HD2ModManager manager)
 		{
 			_provider = provider;
+			_logger = logger;
 			_manager = manager;
 			Mods = new(_manager.Mods.Select(m => new ModViewModel(this, _manager, m)).ToArray());
 		}
@@ -70,7 +73,8 @@ namespace HD2ModManager.ViewModels
 			}
 			catch(Exception ex)
 			{
-				MessageBox.Show(App.Current.MainWindow, "Error saving config!\n\nException:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				_logger.LogError(ex, "Error saving config!");
+				MessageBox.Show(App.Current.MainWindow, "Error saving config!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -90,7 +94,8 @@ namespace HD2ModManager.ViewModels
 			}
 			catch(Exception ex)
 			{
-				MessageBox.Show(App.Current.MainWindow, "Error purging mods!\n\nException:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				_logger.LogError(ex, "Error purging mods!");
+				MessageBox.Show(App.Current.MainWindow, "Error purging mods!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 
@@ -110,7 +115,8 @@ namespace HD2ModManager.ViewModels
 			}
 			catch(Exception ex)
 			{
-				MessageBox.Show(App.Current.MainWindow, "Error installing mods!\n\nException:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				_logger.LogError(ex, "Error installing mods!");
+				MessageBox.Show(App.Current.MainWindow, "Error installing mods!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 

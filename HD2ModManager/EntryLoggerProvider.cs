@@ -9,7 +9,7 @@ public sealed class EntryLoggerProvider : ILoggerProvider
 {
 	public ILogger CreateLogger(string categoryName)
 	{
-		return new EntryLogger();
+		return new EntryLogger(categoryName);
 	}
 
 	public void Dispose()

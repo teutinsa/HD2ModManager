@@ -6,13 +6,14 @@ using System.Text;
 
 namespace HD2ModManager;
 
-public sealed class EntryLogger() : ILogger
+public sealed class EntryLogger(string name) : ILogger
 {
 	public static IReadOnlyList<LogEntry> Entries => s_entries;
 
 	public static event EventHandler<LogEntry>? EntryLogged;
 
 	private static readonly List<LogEntry> s_entries = [];
+	private readonly string _name = name;
 
 	public IDisposable? BeginScope<TState>(TState state) where TState : notnull
 	{
@@ -39,9 +40,12 @@ public sealed class EntryLogger() : ILogger
 		builder.Append('[');
 		builder.Append(DateTime.Now.ToString("HH:mm::ss"));
 		builder.Append("] ");
+		builder.Append(_name);
+		builder.Append(" -> ");
 		builder.Append(logLevel.ToString());
 		builder.Append(": ");
 		builder.Append(message);
+		builder.AppendLine();
 
 		if (exception is not null)
 		{
@@ -64,10 +68,10 @@ public sealed class EntryLogger() : ILogger
 			Message = builder.ToString()
 		};
 		s_entries.Add(entry);
-		OnEntryLoggerd(entry);
+		OnEntryLogged(entry);
 	}
 
-	internal void OnEntryLoggerd(LogEntry entry)
+	internal void OnEntryLogged(LogEntry entry)
 	{
 		EntryLogged?.Invoke(this, entry);
 	}

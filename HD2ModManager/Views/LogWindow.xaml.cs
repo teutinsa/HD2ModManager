@@ -8,9 +8,9 @@ public partial class LogWindow : Window
 {
 	public LogWindow(LogViewModel vm)
 	{
-		InitializeComponent();
-
 		DataContext = vm;
+
+		InitializeComponent();
 	}
 
 	protected override void OnClosing(CancelEventArgs e)
