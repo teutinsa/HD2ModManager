@@ -52,3 +52,16 @@ If there are any more questions please message me and I will try my best to assi
 - Fixed a bug that caused a crash when a mod had more than 3 files.
 - Fixed a bug that caused a crash when a mod was named something higher than patch_0.
 - Added separation between more optional buttons.
+
+### 0.2.0.0 (Beta)
+- Added logging.
+
+### 0.2.0.1 (Beta)
+- Fixed a small bug of the application not quitting when the main window was closed.
+
+### 0.2.1.0 (Beta)
+- Improved logging in multiple classes and the loggers themselves.
+- Fixed a log file access bug.
+
+### 0.2.2.0 (Beta)
+- Added more logging and exception handling to manager constructor
