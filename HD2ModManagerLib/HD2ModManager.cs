@@ -88,23 +88,47 @@ public sealed partial class HD2ModManager
 
 		_mods = [];
 
+		_logger?.LogDebug("Enumerating mod directories and reading manifests...");
 		foreach(var dir in s_modsDir.EnumerateDirectories())
 		{
-			var manifest = ModData.Deserialize(Path.Combine(dir.FullName, "manifest.json"));
-			_mods.Add(new Mod(manifest, dir));
-		}
+			var path = Path.Combine(dir.FullName, "manifest.json");
+			_logger?.LogDebug("Reading manifest \"{path}\".", path);
 
+			try
+			{
+				var manifest = ModData.Deserialize(path);
+				_mods.Add(new Mod(manifest, dir));
+			}
+			catch(JsonException ex)
+			{
+				_logger?.LogError(ex, "Error while deserializing mod manifest \"{filename}\"!", path);
+			}
+		}
+		_logger?.LogDebug("Enumeration complete.");
+
+		_logger?.LogDebug("Checking if \"{enabledFile}\" exists...", s_enabledJson.FullName);
 		if (s_enabledJson.Exists)
 		{
+			_logger?.LogDebug("Found enabled list file.");
 			using var stream = s_enabledJson.OpenRead();
-			var enableds = JsonSerializer.Deserialize<ImmutableDictionary<Guid, int>>(stream);
-			foreach (var e in enableds!)
-				if (GetModByGuid(e.Key) is Mod mod)
-				{
-					mod.Enabled = true;
-					mod.Option = e.Value;
-				}
+			try
+			{
+				var enableds = JsonSerializer.Deserialize<ImmutableDictionary<Guid, int>>(stream);
+				foreach (var e in enableds!)
+					if (GetModByGuid(e.Key) is Mod mod)
+					{
+						mod.Enabled = true;
+						mod.Option = e.Value;
+					}
+			}
+			catch (JsonException ex)
+			{
+				_logger?.LogError(ex, "Invalid enabled list file! Deleting.");
+				s_enabledJson.Delete();
+			}
 		}
+		else
+			_logger?.LogDebug("Enabled list file not found.");
 
 		_logger?.LogInformation("Manager initialization successful.");
 	}
